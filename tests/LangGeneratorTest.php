@@ -36,5 +36,4 @@ class LangGeneratorTest extends TestCase
         $this->app['Illuminate\Contracts\Console\Kernel']->registerCommand($command);
         $this->artisan('lang:install', ['local' => 'xyz', '--force' => false]);
     }
-
 }
