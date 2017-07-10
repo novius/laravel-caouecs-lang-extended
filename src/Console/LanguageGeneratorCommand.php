@@ -1,12 +1,11 @@
 <?php
 
-namespace Novius\CaouecsLangExtended\Console\Commands;
+namespace Novius\Caouecs\Lang\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
 
-class LanguageGenerator extends Command
+class LanguageGeneratorCommand extends Command
 {
     protected $signature = 'lang:install {local : The local of language to install (ex: lang:install fr)}
                             {--force : Erase existing files.}';
@@ -15,26 +14,15 @@ class LanguageGenerator extends Command
 
     protected static $requiredVendorLanguagesPath = 'vendor/caouecs/laravel-lang/src';
 
-    protected $excludedFiles = [];
-
-    public function __construct(array $appConfig)
+    protected function getExcludedFilesFromConfig()
     {
-        parent::__construct();
-
-        // Make an array with excluded files' name
-        $this->setExcludedFilesFromConfig($appConfig);
-    }
-
-    protected function setExcludedFilesFromConfig($appConfig)
-    {
-        foreach (array_get($appConfig, 'file_exceptions', []) as $filename) {
-            $this->excludedFiles[] = $filename;
-        }
-        $this->excludedFiles = array_unique($this->excludedFiles);
+        return config('lang-generator.file_exceptions', []);
     }
 
     public function handle()
     {
+        // Make an array with excluded files' name
+        $excludedFiles = $this->getExcludedFilesFromConfig();
         $local = (string) $this->argument('local');
         $forceEraseExistingFiles = $this->option('force');
         $targetPath = base_path('resources/lang');
@@ -61,7 +49,7 @@ class LanguageGenerator extends Command
         }
 
         // Remove files exceptions
-        $files = $this->filterExcludedFiles($localFilesPath, $files);
+        $files = $this->filterExcludedFiles($localFilesPath, $files, $excludedFiles);
 
         if (! $forceEraseExistingFiles) {
             // No force option : keep only non-existing files
@@ -79,16 +67,15 @@ class LanguageGenerator extends Command
         $this->line('Language installation ...');
         $this->line('Copying '.count($files).' files ...');
 
-        $option = '';
-        if ($forceEraseExistingFiles) {
-            $option = '-f';
-        }
-        $process = new Process("cp $option ".implode(' ', $files)." $targetPath");
-        $process->run(function ($type, $buffer) {
-            if (Process::ERR === $type) {
-                return $this->error(trim($buffer));
+        foreach ($files as $filePath) {
+            $fileInfos = pathinfo($filePath);
+            $fileName = $fileInfos['basename'];
+            $targetFilePath = $targetPath.DIRECTORY_SEPARATOR.$fileName;
+            if (! $forceEraseExistingFiles && File::exists($targetFilePath)) {
+                continue;
             }
-        });
+            File::copy($filePath, $targetFilePath);
+        }
 
         return $this->info(mb_strtoupper($local).' language successfully installed.');
     }
@@ -98,9 +85,8 @@ class LanguageGenerator extends Command
      * @param array $files : the array of filename
      * @return array : the array of filename without files present in exceptions config
      */
-    protected function filterExcludedFiles($localFilesPath, array $files)
+    protected function filterExcludedFiles($localFilesPath, array $files, array $excludedFiles)
     {
-        $excludedFiles = $this->excludedFiles;
         $files = array_filter($files, function ($file) use ($localFilesPath, $excludedFiles) {
             return is_file($localFilesPath.DIRECTORY_SEPARATOR.$file) && ! in_array($file, $excludedFiles);
         });
