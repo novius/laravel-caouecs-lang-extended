@@ -22,8 +22,10 @@ class LangGeneratorServiceProvider extends ServiceProvider
         $configPath = __DIR__.'/../config/'.static::$configName.'.php';
         $this->mergeConfigFrom($configPath, static::$configName);
 
-        $this->commands([
-            LanguageGeneratorCommand::class,
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                LanguageGeneratorCommand::class,
+            ]);
+        }
     }
 }
