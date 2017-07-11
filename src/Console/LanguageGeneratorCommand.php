@@ -68,8 +68,7 @@ class LanguageGeneratorCommand extends Command
         $this->line('Copying '.count($files).' files ...');
 
         foreach ($files as $filePath) {
-            $fileInfos = pathinfo($filePath);
-            $fileName = $fileInfos['basename'];
+            $fileName = pathinfo($filePath, PATHINFO_BASENAME);
             $targetFilePath = $targetPath.DIRECTORY_SEPARATOR.$fileName;
             if (! $forceEraseExistingFiles && File::exists($targetFilePath)) {
                 continue;
