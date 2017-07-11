@@ -37,7 +37,6 @@
       "phpunit"
     ]
   },
-  "license": "MIT",
   "config": {
     "sort-packages": true
   }
