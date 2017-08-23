@@ -18,7 +18,7 @@ class LangGeneratorTest extends TestCase
     }
 
     /**
-     * Does the new command lang:install exists ? This doesn't check if this command actually work.
+     * Does the new command lang:install exists? This doesn't check if this command actually work.
      */
     public function testLangInstallCommandExists()
     {
@@ -27,20 +27,20 @@ class LangGeneratorTest extends TestCase
     }
 
     /**
-     * Does lang:install command is executable ? This doesn't check if this command actually work.
+     * Does lang:install command is executable? This doesn't check if this command actually work.
      */
     public function testLaunchCommandWithoutException()
     {
         $this->artisan('lang:install', ['local' => 'fr', '--force' => true]);
     }
 
-    public function testLaunchCommandWithoutArgumentWithFail()
+    public function testLaunchCommandWithoutArgumentFails()
     {
         $this->expectException(RuntimeException::class);
         $this->artisan('lang:install');
     }
 
-    public function testLaunchCommandWithUnavailableLocalWithFail()
+    public function testLaunchCommandWithUnavailableLocalFails()
     {
         $command = m::mock('\Novius\Caouecs\Lang\Console\LanguageGeneratorCommand[error]', [[]]);
         $command->shouldReceive('error')->once()->with('The language wanted doesn\'t exists.');
