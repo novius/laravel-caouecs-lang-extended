@@ -2,6 +2,7 @@
 
 namespace Novius\CaouecsLangExtended\Tests;
 
+use Illuminate\Support\Facades\Artisan;
 use Mockery as m;
 use Novius\Caouecs\Lang\LangGeneratorServiceProvider;
 use Orchestra\Testbench\TestCase;
@@ -9,27 +10,37 @@ use Symfony\Component\Console\Exception\RuntimeException;
 
 class LangGeneratorTest extends TestCase
 {
-    public function createApplication()
+    protected function getPackageProviders($app)
     {
-        $app = parent::createApplication();
-        $app->register(LangGeneratorServiceProvider::class);
-
-        return $app;
+        return [
+            LangGeneratorServiceProvider::class,
+        ];
     }
 
-    public function testCallWithoutArgument()
+    /**
+     * Does the new command lang:install exists? This doesn't check if this command actually work.
+     */
+    public function testLangInstallCommandExists()
     {
-        try {
-            $this->artisan('lang:install');
-        } catch (RuntimeException $e) {
-            $this->assertTrue(true);
-
-            return;
-        }
-        $this->assertTrue(false);
+        $commands = Artisan::all();
+        $this->assertArrayHasKey('lang:install', $commands);
     }
 
-    public function testCallWithUnavailableLocal()
+    /**
+     * Does lang:install command is executable? This doesn't check if this command actually work.
+     */
+    public function testLaunchCommandWithoutException()
+    {
+        $this->artisan('lang:install', ['local' => 'fr', '--force' => true]);
+    }
+
+    public function testLaunchCommandWithoutArgumentFails()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->artisan('lang:install');
+    }
+
+    public function testLaunchCommandWithUnavailableLocalFails()
     {
         $command = m::mock('\Novius\Caouecs\Lang\Console\LanguageGeneratorCommand[error]', [[]]);
         $command->shouldReceive('error')->once()->with('The language wanted doesn\'t exists.');
