@@ -13,7 +13,7 @@ composer install novius/caouecs-lang-extended
 
 Then register the service provider to your `config/app.php` file:
 
-```php?start_inline=1
+```
 'providers' => [
     ...
     Novius\Caouecs\Lang\LangGeneratorServiceProvider::class,
