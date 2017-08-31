@@ -11,7 +11,7 @@ You can install the package via Composer:
 composer install novius/caouecs-lang-extended
 ```
 
-Then register the service provider to your `config/app.php` file:
+Then, if you are on Laravel 5.4 (no need for Laravel 5.5 and higher), register the service provider to your `config/app.php` file:
 
 ```
 'providers' => [

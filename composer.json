@@ -11,7 +11,7 @@
   "require": {
     "php": ">=5.6.4",
     "caouecs/laravel-lang": "~3.0",
-    "laravel/framework": "5.4.*",
+    "laravel/framework": "5.4.*|5.5.*",
     "mockery/mockery": "^0.9.9"
   },
   "require-dev": {
@@ -39,6 +39,13 @@
     "test": [
       "phpunit"
     ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Novius\\Caouecs\\Lang\\LangGeneratorServiceProvider"
+      ]
+    }
   },
   "config": {
     "sort-packages": true
