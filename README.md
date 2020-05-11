@@ -10,6 +10,8 @@ You can install the package via Composer:
 ```
 composer install novius/caouecs-lang-extended
 ```
+* For laravel 5.6, 5.7, 5.8 use 0.4
+* For laravel 5.4, 5.5 use 0.3
 
 Then, if you are on Laravel 5.4 (no need for Laravel 5.5 and higher), register the service provider to your `config/app.php` file:
 
